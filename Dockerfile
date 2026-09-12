@@ -1,6 +1,8 @@
 FROM debian:bookworm-slim AS glibc-provider
 
-FROM alpine:latest
+FROM alpine:3.21
+
+SHELL ["/bin/ash", "-eo", "pipefail", "-c"]
 
 ENV STREAMLIT_SERVER_CORS_ALLOW_ALL=false \
     STREAMLIT_SERVER_ENABLE_CORS=true \
@@ -43,7 +45,7 @@ RUN curl -fsSL https://ollama.com/download/ollama-linux-amd64.tar.zst | zstd -d 
 RUN (ollama serve &) && \
     sleep 5 && \
     ollama pull qwen2.5:1.5b && \
-    ollama run qwen2.5:1.5b "hi" && \
+    ollama run qwen2.5:1.5b "hi"; \
     pkill -f ollama || true
 
 WORKDIR /app

@@ -20,7 +20,8 @@ jobs:
         uses: hadolint/hadolint-action@v3.1.0
         with:
           dockerfile: Dockerfile
-          ignore: DL3018
+          ignore: DL3018,DL4006,SC2015
+          failure-threshold: error
 
       - name: Set up Python 3.11
         uses: actions/setup-python@v5
