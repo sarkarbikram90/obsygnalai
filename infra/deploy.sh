@@ -27,7 +27,7 @@ echo "[INFO] Region:         ${REGION}"
 echo "[INFO] Target Image:   ${IMAGE_TAG}"
 
 echo "[STEP 1/2] Triggering remote container compilation via Cloud Build..."
-gcloud builds submit --tag "${IMAGE_TAG}" .
+gcloud builds submit --default-buckets-behavior=regional-user-owned-bucket --tag "${IMAGE_TAG}" .
 
 echo "[STEP 2/2] Deploying container to Cloud Run with budget-protecting scaling limits..."
 gcloud run deploy "${SERVICE_NAME}" \
