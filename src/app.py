@@ -127,7 +127,7 @@ if "messages" not in st.session_state:
     st.session_state.messages = [
         {
             "role": "assistant",
-            "content": "Welcome to **Obsygnal AI**. Enterprise intelligence platform active on `obsygnal.com`."
+            "content": "Welcome to **Obsygnal AI**"
         }
     ]
 
