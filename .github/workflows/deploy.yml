@@ -7,6 +7,7 @@ on:
   pull_request:
     branches:
       - main
+  workflow_dispatch:
 
 jobs:
   lint-and-test:
@@ -43,7 +44,7 @@ jobs:
   deploy-cloud-run:
     name: Build & Deploy to Cloud Run
     needs: lint-and-test
-    if: github.ref == 'refs/heads/main' && github.event_name == 'push' && (secrets.GCP_WIF_PROVIDER != '' || secrets.GCP_SA_KEY != '')
+    if: github.ref == 'refs/heads/main' && (github.event_name == 'push' || github.event_name == 'workflow_dispatch') && (secrets.GCP_WIF_PROVIDER != '' || secrets.GCP_SA_KEY != '')
     runs-on: ubuntu-latest
     permissions:
       contents: read

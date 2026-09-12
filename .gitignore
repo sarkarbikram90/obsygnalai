@@ -49,5 +49,7 @@ Thumbs.db
 
 # GCP & Cloud
 *.key.json
+*key*.json
+sa-key.json
 service_account.json
 credentials.json
