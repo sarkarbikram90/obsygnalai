@@ -9,7 +9,16 @@ from datetime import datetime, timezone, timedelta
 # Ensure src is on sys.path
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
-from src.app import route_inference, route_inference_stream, async_sync_firestore, FIRESTORE_COLLECTION
+from src.app import (
+    route_inference,
+    route_inference_stream,
+    async_sync_firestore,
+    async_sync_conversation_meta,
+    fetch_recent_conversations,
+    load_conversation_messages,
+    FIRESTORE_COLLECTION,
+    FIRESTORE_META_COLLECTION
+)
 
 class TestObsygnalInference(unittest.TestCase):
     @patch("requests.post")
@@ -101,5 +110,82 @@ class TestObsygnalInference(unittest.TestCase):
         delta = written_data["expire_at"] - written_data["updated_at"]
         self.assertAlmostEqual(delta.total_seconds(), timedelta(days=7).total_seconds(), delta=5)
 
+    @patch("src.app.get_firestore_client")
+    def test_conversation_meta_sync(self, mock_get_client):
+        mock_client = MagicMock()
+        mock_collection = MagicMock()
+        mock_doc = MagicMock()
+
+        mock_get_client.return_value = mock_client
+        mock_client.collection.return_value = mock_collection
+        mock_collection.document.return_value = mock_doc
+
+        test_session = "sess-abc-123"
+        test_title = "Explain Quantum Computing"
+
+        with patch("src.app.db_executor.submit", side_effect=lambda fn, *args, **kwargs: fn(*args, **kwargs)):
+            async_sync_conversation_meta(test_session, test_title)
+
+        mock_client.collection.assert_called_with(FIRESTORE_META_COLLECTION)
+        mock_collection.document.assert_called_with(test_session)
+        mock_doc.set.assert_called_once()
+        written_data, kwargs = mock_doc.set.call_args
+        data = written_data[0]
+        self.assertEqual(data["session_id"], test_session)
+        self.assertEqual(data["title"], test_title)
+        self.assertIn("updated_at", data)
+        self.assertIn("expire_at", data)
+        self.assertTrue(kwargs.get("merge"))
+
+    @patch("src.app.get_firestore_client")
+    def test_fetch_recent_conversations(self, mock_get_client):
+        mock_client = MagicMock()
+        mock_collection = MagicMock()
+        mock_query = MagicMock()
+        mock_limit = MagicMock()
+
+        mock_get_client.return_value = mock_client
+        mock_client.collection.return_value = mock_collection
+        mock_collection.order_by.return_value = mock_query
+        mock_query.limit.return_value = mock_limit
+
+        mock_doc1 = MagicMock()
+        mock_doc1.id = "conv-1"
+        mock_doc1.to_dict.return_value = {
+            "session_id": "conv-1",
+            "title": "First Conversation",
+            "updated_at": datetime.now(timezone.utc)
+        }
+        mock_limit.stream.return_value = [mock_doc1]
+
+        convs = fetch_recent_conversations(limit=5)
+        self.assertEqual(len(convs), 1)
+        self.assertEqual(convs[0]["id"], "conv-1")
+        self.assertEqual(convs[0]["title"], "First Conversation")
+
+    @patch("src.app.get_firestore_client")
+    def test_load_conversation_messages(self, mock_get_client):
+        mock_client = MagicMock()
+        mock_collection = MagicMock()
+        mock_where = MagicMock()
+        mock_order = MagicMock()
+
+        mock_get_client.return_value = mock_client
+        mock_client.collection.return_value = mock_collection
+        mock_collection.where.return_value = mock_where
+        mock_where.order_by.return_value = mock_order
+
+        doc1 = MagicMock()
+        doc1.to_dict.return_value = {"role": "user", "content": "Hello"}
+        doc2 = MagicMock()
+        doc2.to_dict.return_value = {"role": "assistant", "content": "Hi there!"}
+        mock_order.stream.return_value = [doc1, doc2]
+
+        msgs = load_conversation_messages("sess-xyz")
+        self.assertEqual(len(msgs), 2)
+        self.assertEqual(msgs[0]["role"], "user")
+        self.assertEqual(msgs[1]["role"], "assistant")
+
 if __name__ == "__main__":
     unittest.main()
+
