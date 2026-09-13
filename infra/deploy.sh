@@ -45,6 +45,7 @@ gcloud beta run deploy "${SERVICE_NAME}" \
   --max-instances 1 \
   --timeout 600s \
   --no-cpu-throttling \
+  --no-gpu-zonal-redundancy \
   --set-env-vars "GCP_PROJECT=${PROJECT_ID},STREAMLIT_SERVER_CORS_ALLOW_ALL=false,STREAMLIT_SERVER_ENABLE_CORS=true,MODEL_PROFILE=qwen2.5:1.5b,OLLAMA_NUM_THREADS=4,OLLAMA_NUM_CTX=2048,OLLAMA_NUM_PREDICT=1024,OLLAMA_NUM_PARALLEL=1"
 
 SERVICE_URL=$(gcloud run services describe "${SERVICE_NAME}" --platform managed --region "${REGION}" --format 'value(status.url)')
