@@ -1,13 +1,14 @@
 # ⚡ Obsygnal AI (`obsygnal.com`)
 
 [![Cloud Run](https://img.shields.io/badge/GCP-Cloud%20Run-4285F4?logo=googlecloud&logoColor=white)](https://cloud.google.com/run)
+[![GPU](https://img.shields.io/badge/GPU-NVIDIA%20L4%20(24GB%20Ada)-76B900?logo=nvidia&logoColor=white)](https://cloud.google.com/run/docs/configuring/services/gpu)
 [![Ollama](https://img.shields.io/badge/Inference-Ollama%20(qwen2.5%3A1.5b)-000000?logo=ollama&logoColor=white)](https://ollama.com)
 [![Streamlit](https://img.shields.io/badge/Frontend-Streamlit-FF4B4B?logo=streamlit&logoColor=white)](https://streamlit.io)
 [![Firestore](https://img.shields.io/badge/Database-Google%20Cloud%20Firestore-FFCA28?logo=firebase&logoColor=black)](https://cloud.google.com/firestore)
-[![Docker](https://img.shields.io/badge/Container-Alpine%20%2B%20Debian%20glibc-2496ED?logo=docker&logoColor=white)](https://www.docker.com)
+[![Docker](https://img.shields.io/badge/Container-Debian%20Bookworm%20%2B%20CUDA-2496ED?logo=docker&logoColor=white)](https://www.docker.com)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE)
 
-**Obsygnal AI** is an enterprise-grade, privacy-first, serverless AI chat platform engineered for [`obsygnal.com`](https://obsygnal.com). It runs the ultra-fast open-weights **Qwen 2.5 (1.5B)** model optimized for CPU inference entirely self-hosted inside a single Google Cloud Run container, eliminating third-party API token fees, protecting data confidentiality, and delivering sub-second token streaming (~25–35 tokens/sec).
+**Obsygnal AI** is an enterprise-grade, privacy-first, serverless AI chat platform engineered for [`obsygnal.com`](https://obsygnal.com). It runs open-weights neural models (such as **Qwen 2.5**) with hardware acceleration via **NVIDIA L4 GPUs** (with native scale-to-zero) self-hosted inside a single Google Cloud Run container, eliminating third-party API token fees, protecting data confidentiality, and delivering real-time token streaming (150+ tokens/sec on GPU).
 
 ---
 
